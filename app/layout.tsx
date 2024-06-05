@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={`${fonts.reddit_mono.className} max-h-screen h-screen overflow-hidden`}>
         <Providers>{children}</Providers>
       </body>

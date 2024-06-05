@@ -4,7 +4,7 @@ import SideHeader from '../components/SideHeader';
 import ListNote from '../components/ListNote';
 import Note from '../components/Note';
 
-export default function Home() {
+export default function page() {
   return (
     <Grid templateColumns='repeat(24, 1fr)' templateRows='repeat(2, 1fr)' height="100%" className='p-4' gap='8'>
       <GridItem border={'1px solid #ccc'} className='rounded-md' colSpan={3} rowSpan={2}>
