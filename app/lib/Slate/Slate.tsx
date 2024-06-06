@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { createEditor, Editor, Element, Range, Transforms } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
+import { BaseEditor, createEditor, Editor, Element, Transforms } from 'slate'
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps, ReactEditor } from 'slate-react'
 import { Descendant } from 'slate'
-import CodeElement from './Elements/CodeElement'
 import DefaultElement from './Elements/DefaultElement'
 import Leaf from './Elements/Leaf'
 import { CustomElement, CustomText, EmptyText, ImageElement as ImageElementType } from './Types/slate'
 import Toolbar from './Toolbar'
 import ImageElement from './Elements/ImageElement'
+import HeadingElement from './Elements/HeadingElement'
+import { Formater } from './Types/Formater'
 
 export default function SlateNote() {
     const editor = useMemo(() => withReact(createEditor()), [])
@@ -23,18 +24,22 @@ export default function SlateNote() {
         Transforms.insertNodes(editor, image);
     }, [editor]);
 
-    const renderElement = useCallback((props: any) => {
+    const renderElement = useCallback((props: RenderElementProps) => {
         switch (props.element.type) {
-            case 'code':
-                return <CodeElement {...props} />
             case 'image':
                 return <ImageElement {...props} />
+            case 'h1':
+            case 'h2':
+            case 'h3':
+            case 'h4':
+            case 'h5':
+                return <HeadingElement {...props} />
             default:
                 return <DefaultElement {...props} />
         }
     }, [])
 
-    const renderLeaf = useCallback((props: any) => {
+    const renderLeaf = useCallback((props: RenderLeafProps) => {
         return <Leaf {...props} />
     }, [])
 
@@ -51,7 +56,7 @@ export default function SlateNote() {
         <>
             <Slate editor={editor} initialValue={value}>
                 <div style={{ height: '6%' }}>
-                    <Toolbar insertImage={insertImage}></Toolbar>
+                    <Toolbar insertImage={insertImage} editor={editor}></Toolbar>
                 </div>
                 <Editable
                     renderElement={renderElement}
@@ -66,40 +71,29 @@ export default function SlateNote() {
                         }
 
                         switch (event.key) {
-                            case '`': {
-                                event.preventDefault();
-
-                                const [match] = Editor.nodes(editor, {
-                                    match: n => !Editor.isEditor(n) && Element.isElement(n) && n.type === 'code',
-                                });
-                                Transforms.setNodes(
-                                    editor,
-                                    { type: match ? 'paragraph' : 'code' },
-                                    { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
-                                );
-                                break
-                            }
                             case 'b': {
                                 event.preventDefault()
-                                const match: Omit<CustomText, "text"> = Editor.marks(editor)!
-                                Editor.addMark(editor, 'bold', !match.bold)
+                                Formater.toggleBold(editor)
                                 break
                             }
                             case 'i': {
                                 event.preventDefault()
-                                const match: Omit<CustomText, "text"> = Editor.marks(editor)!
-                                Editor.addMark(editor, 'italic', !match.italic)
+                                Formater.toggleItalic(editor)
                                 break
                             }
                             case 'u': {
                                 event.preventDefault()
-                                const match: Omit<CustomText, "text"> = Editor.marks(editor)!
-                                Editor.addMark(editor, 'underline', !match.underline)
+                                Formater.toggleUnderline(editor)
                                 break
                             }
-                            case 'a': {
-                                const { selection } = editor
-                                console.log(selection);
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5': {
+                                event.preventDefault()
+                                Formater.toggleHeading(editor, event.key)
+                                break
                             }
                         }
                     }}
