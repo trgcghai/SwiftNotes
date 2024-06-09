@@ -1,28 +1,30 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { BaseEditor, createEditor, Editor, Element, Transforms } from 'slate'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { createEditor } from 'slate'
 import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps, ReactEditor } from 'slate-react'
 import { Descendant } from 'slate'
 import DefaultElement from './Elements/DefaultElement'
 import Leaf from './Elements/Leaf'
-import { CustomElement, CustomText, EmptyText, ImageElement as ImageElementType } from './Types/slate'
 import Toolbar from './Toolbar'
 import ImageElement from './Elements/ImageElement'
 import HeadingElement from './Elements/HeadingElement'
-import { Formater } from './Types/Formater'
+import { Formater } from './Formater'
+import LinkElement from './Elements/LinkElement'
+import handlePaste from './Components/handlePaste'
+import { withHistory } from 'slate-history'
 
 export default function SlateNote() {
-    const editor = useMemo(() => withReact(createEditor()), [])
-    const [value, setValue] = useState<Descendant[]>([
-        {
-            type: 'paragraph',
-            children: [{ text: '' }],
-        },
-    ])
-    const insertImage = useCallback((url: string) => {
-        const text: EmptyText = { text: '' }
-        const image: ImageElementType = { type: 'image', url, children: [text] };
-        Transforms.insertNodes(editor, image);
-    }, [editor]);
+    const editor = useMemo(() => withReact(withHistory(createEditor())), [])
+    const [value] = useState<Descendant[]>(() => {
+        const content = JSON.parse(localStorage.getItem('content')!)
+        if (!content || content.length === 0) {
+            return [{ type: 'paragraph', children: [{ text: '' }] }]
+        }
+        return content
+    })
+
+    useEffect(() => {
+        ReactEditor.focus(editor)
+    }, [editor])
 
     const renderElement = useCallback((props: RenderElementProps) => {
         switch (props.element.type) {
@@ -34,6 +36,8 @@ export default function SlateNote() {
             case 'h4':
             case 'h5':
                 return <HeadingElement {...props} />
+            case 'link':
+                return <LinkElement {...props} />
             default:
                 return <DefaultElement {...props} />
         }
@@ -43,27 +47,29 @@ export default function SlateNote() {
         return <Leaf {...props} />
     }, [])
 
-    const renderPlaceholder = ({ attributes, children }: { children: any, attributes: object }) => {
-        return (
-            <div {...attributes} style={{ fontStyle: 'normal', color: 'gray' }}>
-                <p>{children}</p>
-                Type something here...
-            </div>
-        )
-    }
-
     return (
         <>
-            <Slate editor={editor} initialValue={value}>
-                <div style={{ height: '6%' }}>
-                    <Toolbar insertImage={insertImage} editor={editor}></Toolbar>
+            <Slate
+                editor={editor}
+                initialValue={value}
+                onChange={value => {
+                    const isAstChange = editor.operations.some(
+                        op => 'set_selection' !== op.type
+                    )
+                    if (isAstChange) {
+                        localStorage.setItem('content', JSON.stringify(value))
+                    }
+                }}
+            >
+                <div style={{ height: '5%' }}>
+                    <Toolbar editor={editor}></Toolbar>
                 </div>
                 <Editable
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
-                    renderPlaceholder={renderPlaceholder}
-                    style={{ maxHeight: '93%', height: '93%' }}
+                    style={{ maxHeight: '95%', height: '95%' }}
                     className='w-full outline-none p-2 rounded-md border-2 no-scrollbar overflow-y-scroll'
+                    onPaste={(e) => handlePaste(editor, e)}
                     onKeyDown={event => {
 
                         if (!event.ctrlKey) {
@@ -98,7 +104,7 @@ export default function SlateNote() {
                         }
                     }}
                 />
-            </Slate>
+            </Slate >
         </>
     )
 }

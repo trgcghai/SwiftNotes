@@ -10,7 +10,7 @@ export default function SideHeader() {
             <ul className="">
                 <li className="mb-3 cursor-pointer border-gray-500">
                     <Link href={'/'} className="flex gap-2 items-center">
-                        <Image src="/logo_high_res.png" className="rounded-lg" width={1000} height={1000} alt={"logo"}></Image>
+                        <Image src="/logo_high_res.png" priority={true} className="rounded-lg" width={1000} height={1000} alt={"logo"}></Image>
                     </Link>
                 </li>
                 <li className="mb-3 border-2 rounded-lg cursor-pointer border-gray-500">

@@ -10,13 +10,13 @@ const HeadingElement = (props: RenderElementProps) => {
     }
 
     return (
-        <span
+        <p
             {...props.attributes}
             style={{ userSelect: 'none' }}
             className={pair[props.element.type]}
         >
             {props.children}
-        </span>
+        </p>
     )
 }
 
