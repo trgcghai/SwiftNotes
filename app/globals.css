@@ -11,3 +11,7 @@
     scrollbar-width: none;
   }
 }
+
+.listnote:hover .note-icon {
+  display: block;
+}

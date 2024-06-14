@@ -3,8 +3,9 @@ import { ArrowLeftEndOnRectangleIcon, UserCircleIcon } from "@heroicons/react/24
 import Image from "next/image";
 import ModalSetting from "../modal/OpenSetting";
 import ModalAboutUs from "../modal/OpenAboutUsSection";
+import { User } from "@/app/global";
 
-export default function SideHeader() {
+export default function SideHeader({ user }: { user: User | undefined }) {
     return (
         <div className="p-2 h-full flex flex-col justify-between">
             <ul className="">
@@ -16,7 +17,7 @@ export default function SideHeader() {
                 <li className="mb-3 border-2 rounded-lg cursor-pointer border-gray-500">
                     <Link href={'#'} className="flex gap-2 p-2 items-center">
                         <UserCircleIcon height={28}></UserCircleIcon>
-                        Người dùng
+                        {user ? (user.email.length > 10 ? user.email.slice(0, 8) + '...' : user.email) : 'Người dùng'}
                     </Link>
                 </li>
                 <li className="mb-3 border-2 rounded-lg cursor-pointer border-gray-500">

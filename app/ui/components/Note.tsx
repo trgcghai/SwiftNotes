@@ -1,6 +1,6 @@
-import { Button, Divider, Textarea } from "@chakra-ui/react";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import SlateNote from "../lib/Slate/Slate";
+import { Note as NoteType, User } from "@/app/global";
+import SlateNote from "@/app/lib/Slate/Slate";
+import { useEffect } from "react";
 
 export default function Note() {
     return (

@@ -1,21 +1,21 @@
 'use client'
 import { Grid, GridItem } from '@chakra-ui/react'
-import SideHeader from '../ui/components/SideHeader';
-import ListNote from '../ui/components/ListNote';
-import Note from '../ui/components/Note';
+import SideHeader from '../../ui/components/SideHeader';
+import ListNote from '../../ui/components/ListNote';
+import Note from '../../ui/components/Note';
 import { useEffect, useState } from 'react';
-import { getNotesByUser } from '../controller/notesController';
-import { User } from '../global';
-import { getUser } from '../controller/userController';
+import { getNotesByUser } from '../../controller/notesController';
+import { getUser } from '@/app/controller/userController';
+import { User } from '@/app/global';
 
 export default function Page() {
 
-  const [user, setUser] = useState<User | undefined>()
   const [notes, setNotes] = useState([])
+  const [user, setUser] = useState<User | undefined>()
 
   useEffect(() => {
     const fetchUser = async () => {
-      const data: User | null = await getUser('user@nextmail.com')
+      const data: User = await getUser('user@nextmail.com')
       if (data) setUser({ ...data })
     }
     fetchUser()
@@ -27,6 +27,7 @@ export default function Page() {
     fetchNote()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
   return (
     <Grid templateColumns='repeat(24, 1fr)' templateRows='repeat(2, 1fr)' height="100%" className='p-4' gap='8'>
