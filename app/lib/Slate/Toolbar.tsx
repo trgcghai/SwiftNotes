@@ -6,10 +6,10 @@ import { Formater } from './Formater';
 import { useEffect, useState } from 'react';
 import { HistoryEditor } from 'slate-history';
 import { ReactEditor } from 'slate-react';
-import { createNote } from '@/app/controller/notesController';
 import { useRouter } from 'next/navigation';
-import { getUser } from '@/app/controller/userController';
 import { User } from '@/app/global';
+import { getUser } from '../actions';
+import { ObjectId } from 'mongodb';
 
 export default function Toolbar({ editor }: { editor: Editor & HistoryEditor }) {
     const router = useRouter()
@@ -25,11 +25,33 @@ export default function Toolbar({ editor }: { editor: Editor & HistoryEditor }) 
 
     useEffect(() => {
         const fetchUser = async () => {
-            const data: User | null = await getUser('user@nextmail.com')
-            if (data) setUser({ ...data })
+            const data = await getUser('user@nextmail.com')
+            data[0]._id = data[0]._id.toString()
+            if (data) setUser({ ...data[0] })
         }
         fetchUser()
     }, [])
+
+    const handleCreateNote = () => {
+        const note = {
+            _id: (() => {
+                const chars = '0123456789abcdef'
+                let res = ''
+                for (let i = 0; i < 12; i++) {
+                    res += chars[Math.floor(Math.random() * 16)]
+                }
+                return res
+            })(),
+            title: 'untitled',
+            content: '',
+            createdAt: new Date(),
+            lastModified: new Date(),
+        }
+        const notes = JSON.parse(localStorage.getItem('notes')!) || []
+        notes.push(note)
+        localStorage.setItem('notes', JSON.stringify(notes))
+        router.push('/' + note._id)
+    }
 
     return (
         <div className='flex justify-between'>
@@ -73,18 +95,10 @@ export default function Toolbar({ editor }: { editor: Editor & HistoryEditor }) 
                     <ArrowUturnRightIcon height={18} onClick={() => { HistoryEditor.redo(editor); ReactEditor.focus(editor) }}></ArrowUturnRightIcon>
                 </Button>
             </div>
-            <Button className="rounded-none mb-3 flex gap-2" onClick={() => {
-                const fetchNewNote = async () => {
-                    const res = await createNote(user!?.email)
-                    const data = res.randomId
-                    router.push('/' + data)
-                }
-                fetchNewNote()
-            }
-            }>
+            <Button className="rounded-none mb-3 flex gap-2" onClick={handleCreateNote}>
                 <PlusCircleIcon height={28}></PlusCircleIcon>
                 Ghi chú mới
             </Button>
-        </div>
+        </div >
     )
 }

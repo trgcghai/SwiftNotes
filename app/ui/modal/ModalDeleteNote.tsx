@@ -1,4 +1,4 @@
-import { deleteNote } from '@/app/controller/notesController'
+import { Note } from '@/app/global'
 import {
     Modal,
     ModalOverlay,
@@ -6,10 +6,25 @@ import {
     ModalBody,
     Button,
 } from '@chakra-ui/react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { redirect, usePathname, useRouter } from 'next/navigation'
 
 export default function ModalDeleteNote({ noteId, isOpen, onClose }: { noteId: string, isOpen: boolean, onClose: Function }) {
     const router = useRouter()
+    const path = usePathname()
+    const handleDeleteNote = () => {
+        let notes = JSON.parse(localStorage.getItem('notes')!)
+        if (noteId != undefined) {
+            notes = notes.filter((item: Note) => item._id != noteId)
+        }
+        localStorage.setItem('notes', JSON.stringify(notes))
+        if (path == '/') {
+            window.location.reload()
+        } else {
+            router.push('/')
+        }
+    }
+
     return (
         <>
             <Modal isOpen={isOpen} size={'lg'} isCentered={true} onClose={() => { onClose() }}>
@@ -26,16 +41,7 @@ export default function ModalDeleteNote({ noteId, isOpen, onClose }: { noteId: s
                             <Button
                                 colorScheme='red'
                                 size='md'
-                                onClick={() => {
-                                    const handleDelete = async () => {
-                                        const res = await deleteNote(noteId)
-                                        if (res && res.status == 200) {
-                                            onClose()
-                                            router.push('/')
-                                        }
-                                    }
-                                    handleDelete()
-                                }}
+                                onClick={handleDeleteNote}
                             >
                                 Xác nhận
                             </Button>

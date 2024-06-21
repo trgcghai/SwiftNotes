@@ -1,3 +1,4 @@
+'use client'
 import {
     FormControl,
     FormLabel,
@@ -11,12 +12,12 @@ export default function LoginSection() {
         <FormControl>
             <div className="mb-3">
                 <FormLabel>Email</FormLabel>
-                <Input type='email' />
+                <Input id='email' name='email' type='email' />
                 <FormErrorMessage>Email của bạn không hợp lệ</FormErrorMessage>
             </div>
             <div className="mb-3">
                 <FormLabel>Mật khẩu</FormLabel>
-                <Input type='password' />
+                <Input id='password' name='password' type='password' />
                 <FormErrorMessage>Mật khẩu không chính xác !!</FormErrorMessage>
             </div>
             <div className="mb-4">

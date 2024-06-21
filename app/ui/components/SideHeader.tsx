@@ -4,6 +4,8 @@ import Image from "next/image";
 import ModalSetting from "../modal/OpenSetting";
 import ModalAboutUs from "../modal/OpenAboutUsSection";
 import { User } from "@/app/global";
+import { logOut } from "@/app/lib/actions";
+import { Button } from "@chakra-ui/react";
 
 export default function SideHeader({ user }: { user: User | undefined }) {
     return (
@@ -17,7 +19,7 @@ export default function SideHeader({ user }: { user: User | undefined }) {
                 <li className="mb-3 border-2 rounded-lg cursor-pointer border-gray-500">
                     <Link href={'#'} className="flex gap-2 p-2 items-center">
                         <UserCircleIcon height={28}></UserCircleIcon>
-                        {user ? (user.email.length > 10 ? user.email.slice(0, 8) + '...' : user.email) : 'Người dùng'}
+                        {user ? (user.email?.length > 10 ? user.email.slice(0, 6) + '...' : user.email) : 'Người dùng'}
                     </Link>
                 </li>
                 <li className="mb-3 border-2 rounded-lg cursor-pointer border-gray-500">
@@ -28,10 +30,12 @@ export default function SideHeader({ user }: { user: User | undefined }) {
                 </li>
             </ul>
             <div className="border-2 rounded-lg cursor-pointer border-gray-500">
-                <Link href={'/login'} className="flex gap-2 p-2 items-center">
-                    <ArrowLeftEndOnRectangleIcon height={28}></ArrowLeftEndOnRectangleIcon>
-                    Đăng xuất
-                </Link>
+                <form action={logOut}>
+                    <Link href={'/login'} className="flex gap-2 p-2 items-center">
+                        <ArrowLeftEndOnRectangleIcon height={28}></ArrowLeftEndOnRectangleIcon>
+                        Đăng xuất
+                    </Link>
+                </form>
             </div>
         </div>
     )

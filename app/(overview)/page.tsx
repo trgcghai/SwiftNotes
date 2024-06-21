@@ -4,28 +4,20 @@ import SideHeader from '../ui/components/SideHeader';
 import ListNote from '../ui/components/ListNote';
 import Note from '../ui/components/Note';
 import { useEffect, useState } from 'react';
-import { getNotesByUser } from '../controller/notesController';
 import { User } from '../global';
-import { getUser } from '../controller/userController';
+import { getUser } from '../lib/actions';
 
 export default function Page() {
 
   const [user, setUser] = useState<User | undefined>()
-  const [notes, setNotes] = useState([])
 
   useEffect(() => {
     const fetchUser = async () => {
-      const data: User | null = await getUser('user@nextmail.com')
-      if (data) setUser({ ...data })
+      const data = await getUser('user@nextmail.com')
+      data[0]._id = data[0]._id.toString()
+      if (data) setUser({ ...data[0] })
     }
     fetchUser()
-
-    const fetchNote = async () => {
-      const data = await getNotesByUser('user@nextmail.com')
-      if (data) setNotes(data)
-    }
-    fetchNote()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -34,7 +26,7 @@ export default function Page() {
         <SideHeader user={user}></SideHeader>
       </GridItem>
       <GridItem border={'1px solid #ccc'} className='rounded-md' colSpan={4} rowSpan={2}>
-        <ListNote notes={notes}></ListNote>
+        <ListNote></ListNote>
       </GridItem>
       <GridItem border={'1px solid #ccc'} className='rounded-md' colSpan={17} rowSpan={2}>
         <Note></Note>
