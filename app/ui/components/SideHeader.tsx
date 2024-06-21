@@ -4,7 +4,6 @@ import Image from "next/image";
 import ModalSetting from "../modal/OpenSetting";
 import ModalAboutUs from "../modal/OpenAboutUsSection";
 import { User } from "@/app/global";
-import { logOut } from "@/app/lib/actions";
 import { Button } from "@chakra-ui/react";
 
 export default function SideHeader({ user }: { user: User | undefined }) {
@@ -30,7 +29,7 @@ export default function SideHeader({ user }: { user: User | undefined }) {
                 </li>
             </ul>
             <div className="border-2 rounded-lg cursor-pointer border-gray-500">
-                <form action={logOut}>
+                <form>
                     <Link href={'/login'} className="flex gap-2 p-2 items-center">
                         <ArrowLeftEndOnRectangleIcon height={28}></ArrowLeftEndOnRectangleIcon>
                         Đăng xuất
